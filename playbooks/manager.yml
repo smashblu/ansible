@@ -1,0 +1,37 @@
+---
+- name: Configure manager node baseline
+  hosts: management
+  become: true
+  gather_facts: true
+  pre_tasks:
+    - name: Require the selected Debian release
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['distribution'] == 'Debian'
+          - ansible_facts['distribution_release'] == os_codename
+        fail_msg: "This playbook requires a different Debian version."
+  tasks:
+    - name: Install management bootstrap packages
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - git
+          - gnupg
+          - python3
+          - python3-venv
+          - openssh-client
+          - cifs-utils
+          - smbclient
+          - ethtool
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+    - name: Set the management hostname
+      ansible.builtin.hostname:
+        name: manager_name
+    - name: Keep SSH available
+      ansible.builtin.service:
+        name: ssh
+        state: started
+        enabled: true
