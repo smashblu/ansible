@@ -1,0 +1,10 @@
+---
+- name: Run OS updates
+  hosts: all
+  become: true
+  tasks:
+    - name: Run updates
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: yes 
+      when: ansible_distribution == "Debian"
