@@ -3,6 +3,7 @@
   hosts: management
   become: true
   gather_facts: true
+  
   pre_tasks:
     - name: Require the selected Debian release
       ansible.builtin.assert:
@@ -10,6 +11,7 @@
           - ansible_facts['distribution'] == 'Debian'
           - ansible_facts['distribution_release'] == {{ os_codename }}
         fail_msg: "This playbook requires a different Debian version."
+
   tasks:
     - name: Install management bootstrap packages
       ansible.builtin.apt:

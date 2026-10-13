@@ -1,0 +1,73 @@
+---
+- name: Install Docker Engine on host
+  hosts: docker
+  become: true
+  
+  tasks:
+    - name: Verify supported Debian version
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['distribution'] == 'Debian'
+          - ansible_facts['distribution_major_version'] in ['12', '13']
+        fail_msg: "This playbook requires Debian version 12 or later"
+        
+    - name: Remove conflicting Docker packages
+      ansible.builtin.apt:
+        name: "{{ docker_conflicting_packages }}"
+        state: absent
+        update_cache: true
+    
+    - name: Install prerequisite packages
+      ansible.builtin.apt:
+        name: "{{ docker_preinstall_packages }}"
+        state: latest
+        update_cache: true
+    
+    - name: Download Docker GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        owner: root
+        group: root
+        mode: '0644'
+        
+    - name: Configure Docker APT repository
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/docker.sources
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+            Types: deb
+            URIs: https://download.docker.com/linux/debian
+            Suites: {{ ansible_facts['distribution_release'] }}
+            Components: stable
+            Architectures: {{ ansible_facts['architecture'] }}
+            Signed-By: /etc/apt/keyrings/docker.asc
+      register: docker_repository
+    
+    - name: Update APT package cache
+      ansible.builtin.apt:
+        update_cache: true
+      when: docker_repository.changed
+
+    - name: Install Docker Engine and plugins 
+      ansible.builtin.apt:
+        name: "{{ docker_packages }}"
+        state: latest
+
+    - name: Ensure Docker service is enabled and running
+      ansible.builtin.systemd_service:
+        name: docker
+        enabled: true
+        state: started
+        
+    - name: Verify Docker installation
+      ansible.builtin.command:
+        cmd: docker --version
+      register: docker_version
+      changed_when: false
+      
+    - name: Display Docker version
+      ansible.builtin.debug:
+        msg: "{{ docker_version.stdout }}"

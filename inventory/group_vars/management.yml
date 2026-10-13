@@ -1,4 +1,5 @@
-packages:
+---
+mgmt_packages:
   - ca-certificates
   - curl
   - git
