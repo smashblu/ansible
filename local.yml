@@ -1,0 +1,9 @@
+---
+- name: Configure local host
+  hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+    - name: Gather facts
+      ansible.builtin.gather_facts:
