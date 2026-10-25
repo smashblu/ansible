@@ -3,7 +3,7 @@ packages:
   - curl
   - neovim
 
-system_timezone: "America/Los_Angeles"
+system_timezone: America/Los_Angeles
 
 pull_time: 30
 
