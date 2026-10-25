@@ -1,4 +1,0 @@
----
-os_codename: trixie
-network_gateway: 192.168.1.1
-network_subnet: 192.168.1.0/24

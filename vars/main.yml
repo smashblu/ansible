@@ -1,0 +1,12 @@
+---
+packages:
+  - git
+  - ansible-core
+  - curl
+  - neovim
+
+system_timezone: America/Los_Angeles
+
+pull_time: 30
+
+pull_repo: "https://github.com/smashblu/ansible.git"

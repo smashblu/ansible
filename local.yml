@@ -1,0 +1,36 @@
+---
+- name: Configure local host
+  hosts: localhost
+  connection: local
+  become: yes
+  
+  vars_files:
+    - vars/main.yml
+
+  tasks:
+  
+  - name: Install/update packages
+    ansible.builtin.package:
+      name: "{{ packages }}"
+      state: latest
+
+  - name: Set timezone
+    ansible.builtin.file:
+      src: "/usr/share/zoneinfo/{{ system_timezone }}"
+      dest: /etc/localtime
+      state: link
+      force: true
+  
+  - name: Keep ssh running
+    ansible.builtin.service:
+      name: ssh
+      state: started
+      enabled: true
+  
+  - name: Run ansible-pull continuously
+    ansible.builtin.cron:
+      name: ansible-pull
+      user: luke
+      minute: "*/{{ pull_time }}"
+      job: "/usr/bin/ansible-pull -o -U {{ pull_repo }} >> /var/log/ansible-pull.log"
+      cron_file: ansible-pull
