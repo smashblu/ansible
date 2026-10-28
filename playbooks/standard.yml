@@ -1,0 +1,26 @@
+---
+- name: Configure standard machine
+  hosts: all
+  become: true
+  gather_facts: true
+  
+  tasks:
+  
+  - name: Install/update packages
+    ansible.builtin.package:
+      name: "{{ packages }}"
+      state: latest
+
+  - name: Set timezone
+    ansible.builtin.file:
+      src: "/usr/share/zoneinfo/{{ system_timezone }}"
+      dest: /etc/localtime
+      state: link
+      force: true
+  
+  - name: Keep ssh running
+    ansible.builtin.service:
+      name: ssh
+      state: started
+      enabled: true
+  

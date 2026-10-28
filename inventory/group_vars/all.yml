@@ -1,0 +1,7 @@
+---
+packages:
+  - git
+  - curl
+  - neovim
+
+system_timezone: America/Los_Angeles
