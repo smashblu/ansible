@@ -30,7 +30,8 @@
   - name: Run ansible-pull continuously
     ansible.builtin.cron:
       name: ansible-pull
-      user: luke
+      user: root
       minute: "*/{{ pull_time }}"
       job: "/usr/bin/ansible-pull -o -U {{ pull_repo }} >> /var/log/ansible-pull.log"
       cron_file: ansible-pull
+        
