@@ -1,8 +1,8 @@
 ---
 packages:
-  - git
   - ansible-core
   - curl
+  - git
   - neovim
 
 system_timezone: America/Los_Angeles
