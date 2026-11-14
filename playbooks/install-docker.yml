@@ -3,9 +3,6 @@
   hosts: docker
   become: true
 
-  vars_files:
-    - vars/docker.yml
-  
   tasks:
     - name: Verify supported Debian version
       ansible.builtin.assert:
