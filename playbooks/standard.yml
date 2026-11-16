@@ -4,25 +4,15 @@
   become: true
   gather_facts: true
   
-  tasks:
-  
-  - name: Install/update packages
-    ansible.builtin.package:
-      name: "{{ packages }}"
-      state: latest
+  pre_tasks:
+    - name: Check if bootstrapped
+      ansible.builtin.stat:
+        path: /etc/ansible/bootstrapped
+      register: bootstrapped
 
-  - name: Set timezone
-    ansible.builtin.file:
-      src: "/usr/share/zoneinfo/{{ system_timezone }}"
-      dest: /etc/localtime
-      state: link
-      force: true
-  
-  - name: Keep ssh running
-    ansible.builtin.service:
-      name: ssh
-      state: started
-      enabled: true
+    - name: Run bootstrap tasks
+      ansible.builtin.include_tasks: task/bootstrap.yml
+      when: not bootstrapped.stat.exists
   
   handlers:
     - name: Restart ssh
