@@ -24,3 +24,8 @@
       state: started
       enabled: true
   
+  handlers:
+    - name: Restart ssh
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
