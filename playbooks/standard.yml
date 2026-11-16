@@ -5,6 +5,7 @@
   gather_facts: true
   
   pre_tasks:
+
     - name: Check if bootstrapped
       ansible.builtin.stat:
         path: /etc/ansible/bootstrapped
@@ -13,6 +14,27 @@
     - name: Run bootstrap tasks
       ansible.builtin.include_tasks: task/bootstrap.yml
       when: not bootstrapped.stat.exists
+
+  tasks: 
+
+    - name: Install standard packages
+      ansible.builtin.package:
+        name: "{{ packages }}"
+        state: latest
+
+    - name: Ensure ssh is running
+      ansible.builtin.service:
+        name: sshd
+        state: started
+        enabled: true
+
+    - name: Run ansible-pull continuously
+      ansible.builtin.cron:
+        name: ansible-pull
+        user: root
+        minute: "*/{{ pull_time }}"
+        job: "/usr/bin/ansible-pull -o -U {{ pull_repo }} >> /var/log/ansible-pull.log"
+        cron_file: ansible-pull
   
   handlers:
     - name: Restart ssh
